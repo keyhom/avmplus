@@ -30,13 +30,15 @@ git:
 language: objective-c
 
 before_install:
-    - brew update
+    #- brew update
     #- brew install ant
     #- brew install adobe-air-sdk
     #- "export AIR_HOME=/usr/local/Cellar/adobe-air-sdk/13.0/libexec"
     
 before_script:
     - mkdir -p bin && cd bin
+    - export CC=gcc-4.2
+    - export CXX=g++-4.2
     - python ./../configure.py
 
 script:
