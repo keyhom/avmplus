@@ -39,7 +39,7 @@ before_script:
     - mkdir -p bin && cd bin
     - export CC=gcc-4.2
     - export CXX=g++-4.2
-    - python ./../configure.py
+    - CFLAGS=" -m32 " CXXFLAGS=" -m32 -Wno-deprecated-declarations " LDFLAGS=" -m32 -arch=i686 " python ./../configure.py --enable-shell
 
 script:
     - make
