@@ -43,5 +43,4 @@ script:
     - export CXXFLAGS=" -m32 -I/usr/local/Cellar/apple-gcc42/4.2.1-5666.3/lib/gcc/i686-apple-darwin11/4.2.1/include/ -Wno-deprecated-declarations "
     - export LDFLAGS=" -m32 -arch=i686 "
     - python ./../configure.py --enable-shell
-    - make
-    #- CC=$(CC) CXX=$(CXX) CFLAGS=$(CFLAGS) CXXFLAGS=$(CXXFLAGS) LDFLAGS=$(LDFLAGS) make
+    - CC=$(CC) CXX=$(CXX) CFLAGS=$(CFLAGS) CXXFLAGS=$(CXXFLAGS) LDFLAGS=$(LDFLAGS) make
