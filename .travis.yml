@@ -32,8 +32,8 @@ language: objective-c
 before_install:
     #- brew update
     #- brew install ant
-    #- brew install adobe-air-sdk
-    #- "export AIR_HOME=/usr/local/Cellar/adobe-air-sdk/13.0/libexec"
+    - brew install adobe-air-sdk
+    - "export AIR_HOME=/usr/local/Cellar/adobe-air-sdk/13.0/libexec"
     
 before_script:
     - mkdir -p bin && cd bin
