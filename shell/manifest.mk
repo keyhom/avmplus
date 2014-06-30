@@ -34,6 +34,7 @@ shell_CXXSRCS := $(shell_CXXSRCS) \
   $(curdir)/../extensions/Selftest.cpp \
   $(curdir)/../extensions/SelftestInit.cpp \
   $(curdir)/../extensions/SelftestExec.cpp \
+  $(curdir)/ShellPosixGlue.cpp \
   $(curdir)/ShellWorkerGlue.cpp \
   $(curdir)/ShellWorkerDomainGlue.cpp \
   $(NULL)

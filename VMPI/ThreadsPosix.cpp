@@ -109,7 +109,14 @@ bool VMPI_threadAttrDestroy(vmpi_thread_attr_t* attr)
 
 bool VMPI_threadAttrSetGuardSize(vmpi_thread_attr_t* attr, size_t size)
 {
+    #ifdef __CYGWIN__
+        fprintf(stderr, "unimplmented: VMPI_threadAttrSetGuardSize\n");
+        abort();
+        (void) attr;
+        (void) size;
+    #else
     return pthread_attr_setguardsize(attr, size) == 0;
+    #endif
 }
 
 bool VMPI_threadAttrSetStackSize(vmpi_thread_attr_t* attr, size_t size)
@@ -137,13 +144,20 @@ void VMPI_threadAttrSetPriorityHigh(vmpi_thread_attr_t* attr)
 
 size_t VMPI_threadAttrDefaultGuardSize()
 {
+    #ifdef __CYGWIN__
+        fprintf(stderr, "unimplemented: VMPI_threadAttrDefaultGuardSize\n");
+        abort();
+    #else
     pthread_attr_t attr;
     size_t size;
     pthread_attr_init(&attr);
     pthread_attr_getguardsize(&attr, &size);
     return size;
+    #endif
 }
 
+#ifndef __CYGWIN__
+// in MMgcPortUnix.cpp for Cygwin
 size_t VMPI_threadAttrDefaultStackSize()
 {
     pthread_attr_t attr;
@@ -152,3 +166,4 @@ size_t VMPI_threadAttrDefaultStackSize()
     pthread_attr_getstacksize(&attr, &size);
     return size;
 }
+#endif

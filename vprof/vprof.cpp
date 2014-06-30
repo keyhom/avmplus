@@ -10,6 +10,7 @@
 
 #ifdef WIN32
 #include "windows.h"
+#elif defined(__CYGWIN__)
 #else
 #define __cdecl
 #include <stdarg.h>

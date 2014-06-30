@@ -50,9 +50,16 @@
 #define HAVE_BACKTRACE
 #endif
 
+#ifdef __CYGWIN__
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
 
 bool AVMPI_canMergeContiguousRegions()
 {
+#ifdef __CYGWIN__
+    return false;
+#endif
     return true;
 }
 
@@ -71,14 +78,26 @@ bool AVMPI_useVirtualMemory()
 
 bool AVMPI_areNewPagesDirty()
 {
+#ifdef __CYGWIN__
+    return true;
+#endif
     return false;
 }
 
 void* AVMPI_reserveMemoryRegion(void* address, size_t size)
 {
+    // Cygwin does not allow re-mmaping memory that is already mapped,
+    // so map this memory as read/write initially so that there is no
+    // need to remap it later.
+    #ifdef __CYGWIN__
+    int prot = PROT_READ | PROT_WRITE;
+    #else
+    int prot = PROT_NONE;
+    #endif
+
     char *addr = (char*)mmap((maddr_ptr)address,
                              size,
-                             PROT_NONE,
+                             prot,
                              MAP_PRIVATE | MAP_ANONYMOUS,
                              -1, 0);
     if (addr == MAP_FAILED) {
@@ -100,12 +119,16 @@ bool AVMPI_releaseMemoryRegion(void* address, size_t size)
 
 bool AVMPI_commitMemory(void* address, size_t size)
 {
+    #ifdef __CYGWIN__
+    // We've already mapped this memory RW to help Cygwin
+    char *addr = (char *) address;
+    #else
     char *addr = (char*)mmap((maddr_ptr)address,
                              size,
                              PROT_READ | PROT_WRITE,
                              MAP_PRIVATE | MAP_FIXED | MAP_ANONYMOUS,
                              -1, 0);
-
+    #endif
     size_t pageSize = VMPI_getVMPageSize();
     char* temp_addr = addr;
     while( temp_addr < (addr+size))
@@ -125,12 +148,19 @@ bool AVMPI_decommitMemory(char *address, size_t size)
     // could reserve it after we munmap it and even worse if that happened the mmap call would
     // still work causing both mmap callers to think they mapped the memory.  Mac does have
     // to release first but it can tell that the following reserve succeeded or not.
+    #ifdef __CYGWIN__
+    // Cygwin does not support remapping memory.
+    (void) size;
+    (void) address;
+    return true;
+    #else
     char *addr = (char*)mmap((maddr_ptr)address,
                              size,
                              PROT_NONE,
                              MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED,
                              -1, 0);
     return addr == address;
+    #endif
 }
 
 void* AVMPI_allocateAlignedMemory(size_t size)
@@ -294,7 +324,23 @@ size_t AVMPI_getPrivateResidentPageCount()
 
 #endif
 
-#ifdef SOLARIS
+#if defined __CYGWIN__
+
+size_t VMPI_threadAttrDefaultStackSize()
+{
+    MEMORY_BASIC_INFORMATION __mib;
+    VirtualQuery(&__mib, &__mib, sizeof(MEMORY_BASIC_INFORMATION));
+    return (uintptr_t)__mib.BaseAddress + __mib.RegionSize - (uintptr_t)__mib.AllocationBase;
+}
+
+uintptr_t AVMPI_getThreadStackBase()
+{
+    MEMORY_BASIC_INFORMATION __mib;
+    VirtualQuery(&__mib, &__mib, sizeof(MEMORY_BASIC_INFORMATION));
+    return (uintptr_t)__mib.BaseAddress + __mib.RegionSize;
+}
+
+#elif defined SOLARIS
 
 pthread_key_t stackTopKey = NULL;
 
@@ -387,7 +433,6 @@ uintptr_t AVMPI_getThreadStackBase()
     GCAssert(stackTop > &sz);
     pthread_setspecific(stackTopKey, stackTop);
     return (uintptr_t)stackTop;
-
 #endif
 }
 

@@ -95,6 +95,11 @@ const char * const avmfeatures = ""
   #if AVMFEATURE_FLOAT
     "AVMFEATURE_FLOAT;"
   #endif
+  // CROSSBRIDGE PATCH START
+  #if AVMFEATURE_ALCHEMY_POSIX
+    "AVMFEATURE_ALCHEMY_POSIX;"
+  #endif
+  // CROSSBRIDGE PATCH END
   #if AVMFEATURE_OSR
     "AVMFEATURE_OSR;"
   #endif

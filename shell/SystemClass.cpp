@@ -38,12 +38,16 @@ namespace avmshell
 
     void SystemClass::exit(int status)
     {
+    #if 1 // HACKERY
+        _exit(status);
+        #else
         if (core()->getIsolate()->getAggregate()->isPrimordial(core()->getIsolate()->getDesc())) {
             Platform::GetInstance()->exit(status);
         } else {
-            GCRef<avmplus::ClassClosure> workerClass = toplevel()->workerClass();
-            static_cast<ShellWorkerClass*>((avmplus::ClassClosure*)workerClass)->getCurrentWorker()->terminate();
-        }
+        GCRef<avmplus::ClassClosure> workerClass = toplevel()->workerClass();
+        static_cast<ShellWorkerClass*>((avmplus::ClassClosure*)workerClass)->getCurrentWorker()->terminate();
+    }
+     #endif
     }
 
     void SystemClass::sleep(int32_t ms)
@@ -184,6 +188,27 @@ namespace avmshell
         avmplus::ArrayObject *array = toplevel->arrayClass()->newArray();
         for(int i=0; i<user_argc;i++)
             array->setUintProperty(i, core->newStringUTF8(user_argv[i])->atom());
+
+        return array;
+    }
+
+    extern "C" char **environ;
+
+    avmplus::ArrayObject * SystemClass::getEnviron()
+    {
+        // get VTable for avmplus.System
+        avmplus::Toplevel *toplevel = this->toplevel();
+        avmplus::AvmCore *core = this->core();
+
+        avmplus::ArrayObject *array = toplevel->arrayClass()->newArray();
+	char **cur = environ;
+	int i = 0;
+	while(*cur)
+	{
+            array->setUintProperty(i, core->newStringUTF8(*cur)->atom());
+	    i++;
+	    cur++;
+	}
 
         return array;
     }

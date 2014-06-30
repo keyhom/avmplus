@@ -92,6 +92,9 @@ namespace avmshell
 #include "DictionaryGlue.h"
 #include "SamplerScript.h"
 #include "ShellCore.h"
+// AVM2 PATCH START
+#include "ShellPosixGlue.h"
+// AVM2 PATCH END
 #include "ShellWorkerGlue.h"
 #include "ShellWorkerDomainGlue.h"
 
@@ -144,6 +147,10 @@ namespace avmshell
         bool do_repl;
         bool do_log;
         bool do_projector;
+        bool projectorHasArgs;
+        int projectorContentLength;
+        int projectorArgsLength;
+        avmplus::ScriptBuffer *projectorScriptBuffer;
         int numthreads;
         int numworkers;
         int repeats;
@@ -171,6 +178,7 @@ namespace avmshell
         friend class ShellIsolate;
     public:
         static int run(int argc, char *argv[]);
+        static void parseCommandLine(int argc, char* argv[], ShellSettings& settings);
 
     private:
 #ifdef VMCFG_WORKERTHREADS

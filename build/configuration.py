@@ -53,7 +53,7 @@ def _configSub(ostest, cputest, options):
     if re.search(r'^i(\d86|86pc|x86)$', cputest):
         cpu = 'i686'
     elif re.search('^(x86_64|amd64)$', cputest):
-        cpu = 'x86_64'
+        cpu = 'i686' # force 32bit builds for now
     elif re.search('^(ppc64|powerpc64)$', cputest):
         cpu = 'ppc64'
     elif re.search('^(ppc|powerpc|Power Macintosh)$', cputest):
@@ -231,6 +231,9 @@ class Configuration:
 
             if 'CXX' in os.environ:
                 self._acvars['CXX'] = os.environ['CXX']
+                self._acvars['CXXFLAGS'] += os.environ.get('CXXFLAGS', '')
+                self._acvars['CFLAGS'] += os.environ.get('CFLAGS', '')
+                self._acvars['LDFLAGS'] += os.environ.get('LDFLAGS', '')
             elif self._target[1] == 'i686':
                 self._acvars['CXX'] = 'g++'
                 self._acvars['CXXFLAGS'] += ' -arch i686 '
