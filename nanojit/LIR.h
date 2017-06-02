@@ -7,6 +7,10 @@
 #ifndef __nanojit_LIR__
 #define __nanojit_LIR__
 
+#ifdef NL1
+ #undef NL1 // BSD hack
+#endif 
+
 namespace nanojit
 {
     enum LOpcode

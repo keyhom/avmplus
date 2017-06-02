@@ -297,6 +297,7 @@ namespace avmshell
         /*@}*/
 
         avmplus::ArrayObject * getArgv();
+        avmplus::ArrayObject * getEnviron();
 
         avmplus::Stringp readLine();
 

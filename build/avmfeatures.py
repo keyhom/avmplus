@@ -49,6 +49,11 @@ def featureSettings(o):
         args += "-DAVMFEATURE_FLOAT=1 "
     if (arg == False):
         args += "-DAVMFEATURE_FLOAT=0 "
+    arg = o.getBoolArg("alchemy-posix")
+    if (arg == True):
+        args += "-DAVMFEATURE_ALCHEMY_POSIX=1 "
+    if (arg == False):
+        args += "-DAVMFEATURE_ALCHEMY_POSIX=0 "
     arg = o.getBoolArg("osr")
     if (arg == True):
         args += "-DAVMFEATURE_OSR=1 "
@@ -230,7 +235,12 @@ def builtinBuildFlags(o):
     buildFlags = ""
     arg = o.getBoolArg("float", False, False)
     if (arg == True):
-        buildFlags += "-config CONFIG::VMCFG_FLOAT=true -abcfuture"
+        buildFlags += " -config CONFIG::VMCFG_FLOAT=true -abcfuture "
     if (arg == False):
-        buildFlags += "-config CONFIG::VMCFG_FLOAT=false"
+        buildFlags += " -config CONFIG::VMCFG_FLOAT=false "
+    arg = o.getBoolArg("alchemy-posix", False, False)
+    if (arg == True):
+        buildFlags += " -config CONFIG::VMCFG_ALCHEMY_POSIX=true "
+    if (arg == False):
+        buildFlags += " -config CONFIG::VMCFG_ALCHEMY_POSIX=false "
     return buildFlags

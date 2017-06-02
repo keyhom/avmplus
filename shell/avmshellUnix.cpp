@@ -13,6 +13,9 @@
 #include <unistd.h>
 
 #include <sys/resource.h>
+#ifdef __CYGWIN__
+#include <fenv.h> // need to set float precision explicitly on cygwin
+#endif
 
 namespace avmshell
 {
@@ -76,6 +79,9 @@ int main(int argc, char *argv[])
     avmshell::UnixPlatform platformInstance(&dummy);
     gPlatformHandle = &platformInstance;
 
+#ifdef __CYGWIN__
+    fesetprec(FE_DOUBLEPREC);
+#endif
     int code = avmshell::Shell::run(argc, argv);
     if (code == avmshell::OUT_OF_MEMORY) {
         // Fascistic warnings settings for Linux64 require the value to be

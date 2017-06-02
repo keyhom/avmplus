@@ -474,6 +474,16 @@ var FEATURES =
     <build-flags type="onoff"> -abcfuture </build-flags>
     <precludes> AVMFEATURE_AOT </precludes> <!-- AOT + float doesn't work yet, byt that will change eventually -->
   </feature>
+  
+  <!-- CROSSBRIDGRE PATCH START -->
+  <feature>
+    <desc> Enables the POSIX builtins used by commandline Alchemy apps. </desc>
+    <name> AVMFEATURE_ALCHEMY_POSIX </name>
+    <defines> VMCFG_ALCHEMY_POSIX  </defines>
+    <build-flags type="boolean"> -config CONFIG::VMCFG_ALCHEMY_POSIX </build-flags>
+    <build-flags type="onoff"> </build-flags>
+  </feature>
+  <!-- CROSSBRIDGRE PATCH END -->
 
   <feature>
     <desc> Enables delayed JIT-compilation with on-stack replacement, by default,

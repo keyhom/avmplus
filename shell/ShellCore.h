@@ -147,7 +147,7 @@ namespace avmshell
 #endif
 
 #ifdef AVMSHELL_PROJECTOR_SUPPORT
-        int executeProjector(char *executablePath);
+        int executeProjector(ShellSettings &settings);
 #endif
 
 #ifdef VMCFG_SELFTEST
@@ -160,6 +160,7 @@ namespace avmshell
 
 #ifdef AVMSHELL_PROJECTOR_SUPPORT
         static bool isValidProjectorFile(const char* filename);
+        static void gatherProjectorSettings(ShellSettings &settings);
 #endif
 
         /*virtual*/ inline avmplus::ApiVersion getDefaultAPI() { return this->defaultAPIVersion; }

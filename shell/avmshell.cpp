@@ -104,7 +104,19 @@ namespace avmshell
             }
 
             avmplus::FixedHeapRef<Shell> instance(mmfx_new(Shell));
-            instance->parseCommandLine(argc, argv);
+
+            instance->settings.programFilename = argv[0]; // How portable / reliable is this?
+#ifdef AVMSHELL_PROJECTOR_SUPPORT
+            ShellCore::gatherProjectorSettings(instance->settings);
+
+            if(instance->settings.projectorHasArgs && argc > 0) {
+                instance->settings.arguments = &argv[1];
+                instance->settings.numargs = argc-1;
+            }
+
+            if(!(instance->settings.do_projector && instance->settings.projectorHasArgs))
+#endif
+            instance->parseCommandLine(argc, argv, instance->settings);
 
             if (instance->settings.do_log)
               initializeLogging(instance->settings.numfiles > 0 ? instance->settings.filenames[0] : "AVMLOG");
@@ -150,6 +162,16 @@ namespace avmshell
 		else 
 		{
 			Shell* shell = static_cast<Shell*> (getAggregate());
+			 #ifdef AVMSHELL_PROJECTOR_SUPPORT
+        if(shell->settings.do_projector)
+        {
+            m_code.allocate(1);
+            size_t size = shell->settings.projectorScriptBuffer->getSize();
+            m_code.values[0].allocate((int)size);
+            memcpy(m_code.values[0].values, shell->settings.projectorScriptBuffer->getBuffer(), size);
+            return;
+        }
+#endif
 			int numfiles = shell->settings.numfiles;
 			char** filenames = shell->settings.filenames;
 			
@@ -297,8 +319,8 @@ namespace avmshell
 #ifdef AVMSHELL_PROJECTOR_SUPPORT
         if (settings.do_projector) {
             AvmAssert(settings.programFilename != NULL);
-            int exitCode = shell->executeProjector(settings.programFilename);
-            if (exitCode != 0)
+            int exitCode = shell->executeProjector(settings);
+            // if (exitCode != 0) // HACKERY?!
                 Platform::GetInstance()->exit(exitCode);
         }
 #endif
@@ -780,13 +802,11 @@ namespace avmshell
     }
 
     /* static */
-    void Shell::parseCommandLine(int argc, char* argv[])
+    void Shell::parseCommandLine(int argc, char* argv[], ShellSettings &settings)
     {
         bool print_version = false;
 
         // options filenames -- args
-
-        settings.programFilename = argv[0];     // How portable / reliable is this?
         for (int i=1; i < argc ; i++) {
             const char * const arg = argv[i];
             bool mmgcSaysArgIsWrong = false;
@@ -981,7 +1001,6 @@ namespace avmshell
                 else if (!VMPI_strcmp(arg, "-jitharden")) {
                     settings.njconfig.harden_nop_insertion = true;
                     settings.njconfig.harden_function_alignment = true;
-                    settings.njconfig.harden_blind_constants = true;
                 }
                 else if (!VMPI_strcmp(arg, "-Ojit")) {
                     settings.runmode = avmplus::RM_jit_all;
@@ -1176,7 +1195,7 @@ namespace avmshell
         // Vetting the options
 
 #ifdef AVMSHELL_PROJECTOR_SUPPORT
-        if (settings.programFilename != NULL && ShellCore::isValidProjectorFile(settings.programFilename)) {
+        if (settings.do_projector) {
             if (settings.do_selftest || settings.do_repl || settings.numfiles > 0) {
                 avmplus::AvmLog("Projector files can't be used with -repl, -Dselftest, or program file arguments.\n");
                 usage();
@@ -1185,7 +1204,6 @@ namespace avmshell
                 avmplus::AvmLog("A projector requires exactly one worker on one thread.\n");
                 usage();
             }
-            settings.do_projector = 1;
             return;
         }
 #endif

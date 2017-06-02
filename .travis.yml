@@ -39,5 +39,5 @@ script:
     - export APP_CFLAGS=" -m32 -I/usr/local/Cellar/apple-gcc42/4.2.1-5666.3/lib/gcc/i686-apple-darwin11/4.2.1/include/ "
     - export APP_CXXFLAGS=" -m32 -I/usr/local/Cellar/apple-gcc42/4.2.1-5666.3/lib/gcc/i686-apple-darwin11/4.2.1/include/ -Wno-deprecated-declarations "
     - export APP_LDFLAGS=" -m32 -arch=i686 "
-    - python ./../configure.py --enable-shell
+    - python ./../configure.py --enable-shell --enable-alchemy-posix
     - make
