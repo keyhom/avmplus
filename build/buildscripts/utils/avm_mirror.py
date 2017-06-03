@@ -24,6 +24,7 @@
 # Information on how to setup the host of this script can
 # be found @ https://zerowing.corp.adobe.com/x/QwU5JQ
 
+from __future__ import absolute_import, print_function
 import os, marshal, sys, subprocess, shutil, tempfile
 import datetime, pytz
 from subprocess import Popen, PIPE

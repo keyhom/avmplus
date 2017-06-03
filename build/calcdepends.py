@@ -5,6 +5,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
+from __future__ import absolute_import, print_function
 import os, sys, re
 from stat import *
 
@@ -39,18 +40,18 @@ def rebuildNeeded(file, dependencies, verbose):
     f = _statcache.getMTime(file)
     if f == 0:
         if verbose:
-            print >>sys.stderr, "Target %s doesn't exist" % file
+            print("Target %s doesn't exist" % file, file=sys.stderr)
         return True
 
     for dep in dependencies:
         d = _statcache.getMTime(dep)
         if d == 0:
             if verbose:
-                print >>sys.stderr, "Target %s missing dependency %s" % (file, dep)
+                print("Target %s missing dependency %s" % (file, dep), file=sys.stderr)
             return True
         if d > f:
             if verbose:
-                print >>sys.stderr, "Target %s older than dependency %s" % (file, dep)
+                print("Target %s older than dependency %s" % (file, dep), file=sys.stderr)
             return True
 
     return False
@@ -75,7 +76,7 @@ def rebuildsNeeded(files, outfile, verbose, quiet):
         istream.close()
     else:
         if not quiet:
-            print >>sys.stderr, "Writing %s: doesn't exist" % outfile
+            print("Writing %s: doesn't exist" % outfile, file=sys.stderr)
         do_write = True
 
     newrebuilds = []
@@ -93,12 +94,12 @@ def rebuildsNeeded(files, outfile, verbose, quiet):
 
         except IOError:
             if verbose:
-                print >>sys.stderr, "IOError attempting to check rebuildNeeded %s %s" % (objfile, depfile)
+                print("IOError attempting to check rebuildNeeded %s %s" % (objfile, depfile), file=sys.stderr)
             pass
 
         if rebuild:
             if verbose:
-                print >>sys.stderr, "Scheduling %s for rebuilding" % objfile
+                print("Scheduling %s for rebuilding" % objfile, file=sys.stderr)
             newrebuilds.append(objfile)
 
             if objfile in oldrebuilds:
@@ -108,7 +109,7 @@ def rebuildsNeeded(files, outfile, verbose, quiet):
 
     if do_write or len(oldrebuilds):
         if not quiet:
-            print "Building %s" % outfile
+            print("Building %s" % outfile)
         ostream = open(outfile, "w")
         for objfile in newrebuilds:
             ostream.write(objfile + ": FORCE\n")

@@ -22,6 +22,7 @@
 #
 #****************************************************************************
 
+from __future__ import absolute_import, print_function
 import os
 import os.path
 import sys
@@ -90,7 +91,7 @@ def _setSDKParams(sdk_version, os_ver, xcode_version):
         if xcode_version is None:
             xcode_version = '6'
     else:
-        print'Unknown SDK version -> %s. Expected values are 104u, 105, 106 or 107.' % sdk_version
+        print('Unknown SDK version -> %s. Expected values are 104u, 105, 106 or 107.' % sdk_version)
         sys.exit(2)
 
     sdk_prefix = None
@@ -103,7 +104,7 @@ def _setSDKParams(sdk_version, os_ver, xcode_version):
 
     sdk_path = sdk_prefix + sdk_number + ".sdk"
     if not os.path.exists(sdk_path):
-        print'Could not find %s' % sdk_path
+        print('Could not find %s' % sdk_path)
         sys.exit(2)
     else:
         return os_ver,sdk_path
